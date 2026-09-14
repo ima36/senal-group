@@ -1,0 +1,4 @@
+/*
+ * Admin-only styles. The site's Tailwind build is imported by
+ * (frontend)/layout.tsx only, so preflight never reaches the admin panel.
+ */
