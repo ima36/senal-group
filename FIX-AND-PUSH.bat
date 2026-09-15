@@ -15,7 +15,7 @@ echo.
 pause
 
 echo.
-echo --- 1/4  removing superseded files -----------------------------
+echo --- 1/5  removing superseded files -----------------------------
 powershell -NoProfile -Command "if (Test-Path -LiteralPath 'app') { Remove-Item -LiteralPath 'app' -Recurse -Force; Write-Host '    removed  app' }"
 powershell -NoProfile -Command "if (Test-Path -LiteralPath 'CLAUDE.md') { Remove-Item -LiteralPath 'CLAUDE.md' -Recurse -Force; Write-Host '    removed  CLAUDE.md' }"
 powershell -NoProfile -Command "if (Test-Path -LiteralPath 'public\file.svg') { Remove-Item -LiteralPath 'public\file.svg' -Recurse -Force; Write-Host '    removed  public\file.svg' }"
@@ -28,7 +28,21 @@ powershell -NoProfile -Command "if (Test-Path -LiteralPath 'tsconfig.tsbuildinfo
 echo     done.
 
 echo.
-echo --- 2/4  building ---------------------------------------------
+echo --- 2/5  installing dependencies ------------------------------
+echo     node_modules here predates the new package.json, so cross-env,
+echo     payload and the rest are missing. Vercel runs this itself; the
+echo     local build needs it too.
+call npm install
+if errorlevel 1 (
+  echo.
+  echo   npm install FAILED. Nothing committed or pushed.
+  echo.
+  pause
+  exit /b 1
+)
+
+echo.
+echo --- 3/5  building ---------------------------------------------
 call npm run build
 if errorlevel 1 (
   echo.
@@ -42,12 +56,12 @@ if errorlevel 1 (
 echo     build OK.
 
 echo.
-echo --- 3/4  staging ----------------------------------------------
+echo --- 4/5  staging ----------------------------------------------
 git add -A
 git status --short
 
 echo.
-echo --- 4/4  commit and push --------------------------------------
+echo --- 5/5  commit and push --------------------------------------
 git commit -m "Remove superseded pre-split files" || echo     (nothing new to commit)
 git push
 if errorlevel 1 (
