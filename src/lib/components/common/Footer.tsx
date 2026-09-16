@@ -1,91 +1,92 @@
+'use client'
+import React from 'react'
+import Link from 'next/link'
+import Flexbox from '../ui/Flexbox'
 import SenalWordmark from '@/assets/icons/SenalWordmark'
-import NavigationLink from './NavigationLink'
-import { getAvailableLegalPages } from '@/lib/api/legal.actions'
-import { SENAL_SITE_URL, SENAL_SKY_URL } from '@/lib/site.config'
+import { FooterLinks } from './FooterLinks'
 
 /**
- * The three companies live on three domains, so the sibling links are absolute
- * and marked rel="noopener". Internal pages still use NavigationLink so they
- * keep the loading transition.
+ * Restored to the pre-split original's structure.
+ *
+ * The previous version here was a redesign — a flex column layout with a
+ * wordmark, a tagline and a "coming soon" company nav — none of which existed
+ * before the split. This is the original again: the
+ * `max-w-6xl mx-auto grid-cols-5 items-center gap-[50px]` desktop row with the
+ * mark centred between the cross-site links and the legal links, the separate
+ * `md:hidden px-9` mobile row, and the same `md:py-8 py-4` band over a
+ * copyright strip at `text-[10px] md:text-[14px]`.
+ *
+ * Differences, all forced and none structural:
+ *
+ *  - The band is `bg-charcoal` over `bg-greyBg`. The original used `bg-black`
+ *    over `bg-greyBg` for the Senal Group path; charcoal is the palette that
+ *    was actually chosen for this company.
+ *  - The centre mark is Senal Group's own wordmark. The original reached for
+ *    Senal Sky's `LogoIcon`, which does not belong to this project.
+ *  - Terms and Privacy pointed at `/home`, which was never a route — two 404s
+ *    in the footer of every page. They point at the real pages.
  */
-const SIBLING_SITES = [
-  { href: SENAL_SKY_URL, label: 'Senal Sky' },
-  { href: SENAL_SITE_URL, label: 'Senal Site' },
-] as const
-
-const LEGAL_LABELS = {
-  terms: { href: '/terms', label: 'Terms & Conditions' },
-  privacy: { href: '/privacy', label: 'Privacy Policy' },
-} as const
-
-/**
- * Server component. Legal links are rendered only for documents that actually
- * have content — the version this was ported from linked both of them at
- * `/home`, a route that does not exist, so every page footer carried two 404s.
- */
-export const Footer = async () => {
-  const available = await getAvailableLegalPages()
-  const legalLinks = available.map((key) => LEGAL_LABELS[key])
-
+export const Footer = () => {
   return (
-    <footer className="w-full">
-      <div className="w-full bg-charcoal py-10">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-8 px-6 md:flex-row md:items-start md:justify-between">
-          <div className="flex flex-col items-center gap-3 md:items-start">
-            <NavigationLink href="/" aria-label="Senal Group — home">
-              <SenalWordmark className="h-7 w-[119px] text-white" />
-            </NavigationLink>
-            <p className="text-sm text-grey2">Three companies. Three industries. One vision.</p>
+    <Flexbox fullWidth>
+      <div className="w-full md:py-8 py-4 bg-charcoal">
+        <div className="max-w-6xl mx-auto grid-cols-5 items-center gap-[50px] hidden md:grid">
+          {/* Left and right links (dynamic) */}
+          <FooterLinks />
+          {/* Center logo */}
+          <div className="justify-self-center">
+            <SenalWordmark className="h-7 w-[119px] text-white" />
           </div>
-
-          <nav aria-label="Group companies" className="flex flex-col items-center gap-3 md:items-start">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">
-              Group companies
-            </h2>
-            <ul className="flex list-none flex-col items-center gap-2 md:items-start">
-              {SIBLING_SITES.map(({ href, label }) => (
-                <li key={href}>
-                  <a
-                    href={href}
-                    rel="noopener"
-                    className="text-base font-medium text-white transition-opacity duration-300 hover:opacity-75"
-                  >
-                    {label}
-                  </a>
-                </li>
-              ))}
-              <li>
-                <span className="text-base font-medium text-grey2">
-                  Senal Sea <span className="text-sm text-gold">— coming soon</span>
-                </span>
-              </li>
-            </ul>
-          </nav>
-
-          {legalLinks.length > 0 ? (
-            <nav aria-label="Legal" className="flex flex-col items-center gap-3 md:items-start">
-              <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Legal</h2>
-              <ul className="flex list-none flex-col items-center gap-2 md:items-start">
-                {legalLinks.map(({ href, label }) => (
-                  <li key={href}>
-                    <NavigationLink
-                      href={href}
-                      className="text-base font-medium text-white transition-opacity duration-300 hover:opacity-75"
-                    >
-                      {label}
-                    </NavigationLink>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ) : null}
+          {/* Right side links */}
+          <Link
+            href="/terms"
+            className="text-white text-[18px] font-medium hover:opacity-75 transition-opacity duration-300 justify-self-start"
+          >
+            Terms &amp; Conditions
+          </Link>
+          <Link
+            href="/privacy"
+            className="text-white text-[18px] font-medium hover:opacity-75 transition-opacity duration-300 justify-self-start"
+          >
+            Privacy Policy
+          </Link>
         </div>
-      </div>
+        <Flexbox align="center" row fullWidth justify="between" className="mx-auto md:hidden px-9">
+          <div className="w-1/5">
+            <SenalWordmark className="h-6 w-[96px] text-white" />
+          </div>
+          <Flexbox row fullWidth justify="around" align="center" className="w-3/4">
+            <Flexbox className="gap-3">
+              <FooterLinks />
+            </Flexbox>
 
-      <div className="flex w-full flex-row items-center justify-center bg-ink py-5 text-center text-xs text-grey2 md:text-sm">
-        Senal Group © {new Date().getFullYear()} | All Rights Reserved.
+            <Flexbox className="gap-3">
+              <Link
+                href="/terms"
+                className="text-white whitespace-nowrap text-xs font-medium hover:opacity-75 transition-opacity duration-300 justify-self-start"
+              >
+                Terms &amp; Conditions
+              </Link>
+              <Link
+                href="/privacy"
+                className="text-white whitespace-nowrap text-xs font-medium hover:opacity-75 transition-opacity duration-300 justify-self-start"
+              >
+                Privacy Policy
+              </Link>
+            </Flexbox>
+          </Flexbox>
+        </Flexbox>
       </div>
-    </footer>
+      <Flexbox
+        row
+        fullWidth
+        justify="center"
+        align="center"
+        className="md:py-8 py-4 text-[10px] md:text-[14px] bg-greyBg"
+      >
+        Senal Group © {new Date().getFullYear()} | All Rights Reserved.
+      </Flexbox>
+    </Flexbox>
   )
 }
 

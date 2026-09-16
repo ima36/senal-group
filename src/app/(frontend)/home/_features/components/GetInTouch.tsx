@@ -132,7 +132,14 @@ export const GetInTouch = () => {
 
   return (
     <section id="contact" className="w-full scroll-mt-24 pb-20 md:pb-28">
-      <div className="relative mx-auto w-[86%] max-w-5xl rounded-[14px] bg-charcoal p-8 lg:w-4/5 lg:py-14 lg:pl-16 lg:pr-12">
+      {/*
+        Panel geometry restored to the pre-split original:
+        `lg:w-[72.5%] w-4/5 mx-auto lg:py-14 lg:pl-20 p-8 rounded-[10px]
+        min-h-[400px]`. Only the ground colour differs — charcoal instead of
+        the mauve this section borrowed from Senal Sky, which is the palette
+        change that was actually asked for.
+      */}
+      <div className="relative lg:w-[72.5%] w-4/5 mx-auto lg:py-14 lg:pl-20 p-8 rounded-[10px] min-h-[400px] bg-charcoal">
         <Flexbox row fullWidth className="mb-8 justify-center lg:justify-start">
           <UnderlinedHeader
             text="Get In Touch"
@@ -142,8 +149,8 @@ export const GetInTouch = () => {
           />
         </Flexbox>
 
-        <Flexbox fullWidth align="start" className="gap-8 lg:flex-row lg:gap-12">
-          <div className="w-full lg:w-[58%]">
+        <Flexbox fullWidth align="start" className="lg:gap-10 gap-7 lg:flex-row">
+          <div className="lg:w-[56%] w-full">
             <form onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-4">
               <div className="flex w-full flex-col gap-4 lg:flex-row">
                 <Field
